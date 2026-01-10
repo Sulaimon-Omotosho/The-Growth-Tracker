@@ -4,9 +4,9 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className='pt-16'>
+    <section className='pt-16'>
       {/* FEATURE IMAGE  */}
-      <div className='w-full h-120 overflow-hidden relative'>
+      <section className='w-full h-120 overflow-hidden relative'>
         {/* Check linear gradient */}
         <div className='bg-[url("/assets/Pastor-Bolaji-Idowu.png")] bg-cover bg-center bg-no-repeat absolute inset-0' />
         <div className='absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent' />
@@ -17,9 +17,9 @@ export default function Home() {
             Know HICC and be empowered to walk in Christ's fullness.
           </p>
         </div>
-      </div>
+      </section>
       {/* DESCRIPTION */}
-      <div className='max-w-3xl mx-auto px-4 py-12'>
+      <section className='max-w-3xl mx-auto px-4 py-12'>
         <h1 className='text-3xl font-bold text-center mb-4'>
           The Growth Tracker
         </h1>
@@ -49,9 +49,9 @@ export default function Home() {
             </span>
           </p>
         </div>
-      </div>
+      </section>
       {/* NEXT STEPS */}
-      <div className=''>
+      <section className=''>
         <h1 className='text-3xl font-bold text-center mb-1'>Next Steps</h1>
         <p className='text-amber-600 mb-5 font-semibold text-center text-lg'>
           Other available decisions...
@@ -123,8 +123,8 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </div>
+      </section>
       {/* The Growth Tracker */}
-    </div>
+    </section>
   )
 }

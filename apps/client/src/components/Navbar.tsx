@@ -26,7 +26,7 @@ const Navbar = () => {
             <p className='hidden md:block text-gray-600 font-bold'>Home</p>
           </Link>
           <Link
-            href='/login'
+            href='/sign-in'
             className='flex items-center justify-center gap-1'
           >
             <LogIn className='w-6 h-6 md:w-4 md:h-4 text-gray-600' />
