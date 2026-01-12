@@ -1,11 +1,12 @@
 import LoginForm from '@/components/forms/LoginForm'
 import LoginGoogle from '@/components/LoginGoogle'
 import Image from 'next/image'
-import React from 'react'
+// import { prisma } from '@repo/db'
 
 const SignIn = () => {
+  // const user = await prisma.user.findFirst()
+
   return (
-    // <div className=' h-fit'>
     <div className='p-4 h-[calc(100vh-64px)]  md:h-[calc(100vh-9rem)] flex items-center justify-center rounded-md'>
       <section className='md:mt-15 shadow-2xl dark:shadow-slate-900 rounded-md flex flex-col md:flex-row md:h-[85%] lg:h-[60%] xl:h-[75%] md:w-full lg:w-[60%] xl:w-1/2 gap-8 md:pr-6'>
         {/* Image Container */}
@@ -28,8 +29,10 @@ const SignIn = () => {
           </div>
         </div>
       </section>
+      {/* <div className='text-bold text-3xl text-center'>
+        {user?.name ?? 'No user found'}{' '}
+      </div> */}
     </div>
-    // </div>
   )
 }
 
