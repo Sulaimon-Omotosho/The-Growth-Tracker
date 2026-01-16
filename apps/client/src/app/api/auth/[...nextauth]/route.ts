@@ -1,8 +1,10 @@
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
+import { prisma } from '@repo/db'
 
-const handler = NextAuth({
+// const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   secret: process.env.AUTH_SECRET,
   debug: true,
   session: { strategy: 'jwt' },
@@ -30,47 +32,58 @@ const handler = NextAuth({
       },
 
       async authorize(credentials) {
-        console.log('CREDENTIALS', credentials)
-
-        if (!credentials?.email || !credentials?.password) return null
-
         const res = await fetch('http://localhost:8000/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
+            email: credentials?.email,
+            password: credentials?.password,
           }),
         })
 
-        if (!res.ok) {
-          console.error('Login failed!')
-          return null
-        }
+        if (!res.ok) return null
 
-        const data = await res.json()
-
-        if (!data?.id) {
-          console.error('Invalid user object', data)
-          return null
-        }
+        const user = await res.json()
 
         return {
-          id: data.id,
-          email: data.email,
-          role: data.role,
-          accessToken: data.accessToken,
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          accessToken: user.accessToken,
         }
       },
     }),
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        const email = user.email as string
+
+        const existingUser = await prisma.user.findUnique({
+          where: { email },
+        })
+
+        if (!existingUser) {
+          await prisma.user.create({
+            data: {
+              email,
+              image: user.image,
+              provider: 'google',
+              providerId: account.providerAccountId,
+              // role: 'MEMBER',
+            },
+          })
+        }
+      }
+      return true
+    },
+
+    jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
+        token.email = user.email
         token.role = user.role
-        token.accessToken = user.accessToken
       }
       return token
     },
@@ -84,6 +97,8 @@ const handler = NextAuth({
       return session
     },
   },
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

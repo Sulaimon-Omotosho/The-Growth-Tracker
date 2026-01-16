@@ -1,3 +1,4 @@
+import TestUser from '@/components/TestUser'
 import { Dot } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -50,6 +51,8 @@ export default function Home() {
           </p>
         </div>
       </section>
+      {/* TEST  */}
+      {/* <TestUser /> */}
       {/* NEXT STEPS */}
       <section className=''>
         <h1 className='text-3xl font-bold text-center mb-1'>Next Steps</h1>

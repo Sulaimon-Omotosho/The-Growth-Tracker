@@ -10,30 +10,48 @@ import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 
-const LoginForm = () => {
+const AuthSchema = z.discriminatedUnion('mode', [
+  UserLoginSchema.extend({ mode: z.literal('login') }),
+  UserSignUpSchema.extend({ mode: z.literal('signup') }),
+])
+
+const AuthForm = () => {
   const [signUp, setSignUp] = useState(false)
   const [view, setView] = useState(false)
 
-  type UserFormData = z.infer<typeof UserFormSchema>
+  type AuthFormData = z.infer<typeof AuthSchema>
+  // type UserFormData = z.infer<typeof UserFormSchema>
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserFormData>({
-    resolver: zodResolver(signUp ? UserSignUpSchema : UserLoginSchema),
+  } = useForm<AuthFormData>({
+    resolver: zodResolver(AuthSchema),
     defaultValues: {
-      email: 'admin@church.com',
+      mode: 'login',
+      email: 'johndoe@church.com',
       password: 'password123',
     },
   })
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm<UserFormData>({
+  //   resolver: zodResolver(signUp ? UserSignUpSchema : UserLoginSchema),
+  //   defaultValues: {
+  //     email: 'johndoe@church.com',
+  //     password: 'password123',
+  //   },
+  // })
 
   const router = useRouter()
 
-  const login = async (data: UserFormData) => {
+  const login = async (data: AuthFormData) => {
     if (!signUp) {
       const res = await signIn('credentials', {
-        redirect: true,
+        redirect: false,
         callbackUrl: '/',
         email: data.email,
         password: data.password,
@@ -44,12 +62,25 @@ const LoginForm = () => {
       } else {
         console.error('Login failed:', res?.error)
       }
+    } else {
+      const res = await fetch('http://localhost:8000/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email, password: data.password }),
+      })
+      if (!res.ok) {
+        throw new Error('Signup failed')
+      }
+
+      // Auto Login
+      await signIn('credentials', {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+        callbackUrl: '/',
+      })
     }
   }
-
-  // const login = async (data: UserFormData) => {
-  //   console.log(data)
-  // }
 
   return (
     <div>
@@ -133,4 +164,4 @@ const LoginForm = () => {
   )
 }
 
-export default LoginForm
+export default AuthForm

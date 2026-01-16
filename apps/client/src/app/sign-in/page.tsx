@@ -1,9 +1,9 @@
-import LoginForm from '@/components/forms/LoginForm'
+import AuthForm from '@/components/forms/AuthForm'
 import LoginGoogle from '@/components/LoginGoogle'
 import Image from 'next/image'
-// import { prisma } from '@repo/db'
+import { prisma } from '@repo/db'
 
-const SignIn = () => {
+const SignIn = async () => {
   // const user = await prisma.user.findFirst()
 
   return (
@@ -22,7 +22,7 @@ const SignIn = () => {
 
         {/* Form Container */}
         <div className=' flex flex-col gap-3 md:w-1/2 p-4'>
-          <LoginForm />
+          <AuthForm />
           <div className=''>
             <p className='text-center pb-1'>Or</p>
             <LoginGoogle />
@@ -30,7 +30,7 @@ const SignIn = () => {
         </div>
       </section>
       {/* <div className='text-bold text-3xl text-center'>
-        {user?.name ?? 'No user found'}{' '}
+        {user?.email ?? 'No user found'}{' '}
       </div> */}
     </div>
   )
