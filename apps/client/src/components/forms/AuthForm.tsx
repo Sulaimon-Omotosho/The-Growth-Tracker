@@ -49,7 +49,7 @@ const AuthForm = () => {
       })
 
       if (res?.ok) {
-        router.push('/')
+        router.push('/user')
       } else {
         console.log('Login Failed')
       }
@@ -70,7 +70,7 @@ const AuthForm = () => {
       })
 
       if (res?.ok) {
-        router.push('/')
+        router.push('/user')
       } else {
         console.log('Signup failed')
       }

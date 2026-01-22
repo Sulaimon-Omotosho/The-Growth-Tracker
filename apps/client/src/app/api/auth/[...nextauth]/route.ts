@@ -6,7 +6,8 @@ import { prisma } from '@repo/db'
 // const handler = NextAuth({
 export const authOptions: NextAuthOptions = {
   secret: process.env.AUTH_SECRET,
-  debug: true,
+  // debug: true,
+  // adapter: PrismaAdapter
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/sign-in',
@@ -32,6 +33,8 @@ export const authOptions: NextAuthOptions = {
       },
 
       async authorize(credentials) {
+        if (!credentials?.email || !credentials.password) return null
+
         const res = await fetch('http://localhost:8000/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -57,8 +60,12 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === 'google') {
+      if (account?.provider === 'google' && profile) {
         const email = user.email as string
+
+        const fullName = (profile as any).name ?? ''
+        const [firstName, ...rest] = fullName.split(' ')
+        const lastName = rest.join(' ')
 
         const existingUser = await prisma.user.findUnique({
           where: { email },
@@ -68,10 +75,12 @@ export const authOptions: NextAuthOptions = {
           await prisma.user.create({
             data: {
               email,
+              firstName: (profile as any).given_name ?? firstName,
+              lastName: (profile as any).family_name ?? lastName,
               image: user.image,
               provider: 'google',
               providerId: account.providerAccountId,
-              // role: 'MEMBER',
+              role: 'MEMBER',
             },
           })
         }
@@ -79,7 +88,11 @@ export const authOptions: NextAuthOptions = {
       return true
     },
 
-    jwt({ token, user, account }) {
+    // async signIn() {
+    //   return true
+    // },
+
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
         token.email = user.email
@@ -92,9 +105,21 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.email = token.email as string
         session.accessToken = token.accessToken as string
       }
       return session
+    },
+  },
+  events: {
+    // ✅ Ensure Google users get a role
+    async createUser({ user }) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          role: 'MEMBER',
+        },
+      })
     },
   },
 }
