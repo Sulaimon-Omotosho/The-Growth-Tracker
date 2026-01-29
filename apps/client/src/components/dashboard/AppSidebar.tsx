@@ -3,6 +3,7 @@ import {
   BriefcaseBusiness,
   Calendar,
   CalendarCheck,
+  ChartLine,
   ChevronUp,
   Earth,
   Home,
@@ -47,7 +48,7 @@ import { redirect } from 'next/navigation'
 const items = [
   {
     title: 'Home',
-    url: '#',
+    url: '/user',
     icon: Home,
   },
   {
@@ -60,16 +61,16 @@ const items = [
     url: '#',
     icon: Calendar,
   },
-  {
-    title: 'Search',
-    url: '#',
-    icon: Search,
-  },
-  {
-    title: 'Settings',
-    url: '#',
-    icon: Settings,
-  },
+  // {
+  //   title: 'Search',
+  //   url: '#',
+  //   icon: Search,
+  // },
+  // {
+  //   title: 'Settings',
+  //   url: '#',
+  //   icon: Settings,
+  // },
 ]
 
 export async function AppSidebar() {
@@ -99,14 +100,16 @@ export async function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+        <SidebarGroup>
+          <SidebarGroupLabel className='font-bold text-black dark:text-white'>
+            Application
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a href={item.url} className='hover:cursor-pointer'>
                       <item.icon />
                       <span>{item.title}</span>
                     </a>
@@ -115,7 +118,7 @@ export async function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup> */}
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel className='font-bold text-black dark:text-white'>
             Growth Journey
@@ -124,7 +127,15 @@ export async function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href='/user'>
+                  <Link href='/growth_track'>
+                    <ChartLine />
+                    Growth Track
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href='/foundation'>
                     <BrickWallShield />
                     Foundation Class
                   </Link>
@@ -132,14 +143,14 @@ export async function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href='/user'>
+                  <Link href='/baptism'>
                     <Waves /> Baptism
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href='/user'>
+                  <Link href='/allCourses'>
                     <LibraryBig /> Courses
                   </Link>
                 </SidebarMenuButton>
@@ -155,24 +166,26 @@ export async function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href='/user'>
+                  <div>
                     <School />
-                    {user.cell?.name || 'Join A Cell'}
-                  </Link>
+                    {user.cell?.name || <Link href='/cell'>Join A Cell</Link>}
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href='/user'>
-                    <BriefcaseBusiness />{' '}
-                    {user.departments[1]?.name || 'Join A Department'}
-                  </Link>
+                  <div>
+                    <BriefcaseBusiness />
+                    {user.departments[1]?.name || (
+                      <Link href='/departments'>Join A Department</Link>
+                    )}
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href='/user'>
-                    <Earth /> Tech Com
+                  <Link href='/interests'>
+                    <Earth /> Other Groups
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -209,7 +222,7 @@ export async function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {user.firstName} {user.lastName}{' '}
+                  <User2 /> {user.firstName} {user.lastName}
                   <ChevronUp className='ml-auto' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

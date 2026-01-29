@@ -40,9 +40,7 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {/* <Navbar /> */}
               {children}
-              {/* <Footer /> */}
             </ThemeProvider>
           </Providers>
         </div>
