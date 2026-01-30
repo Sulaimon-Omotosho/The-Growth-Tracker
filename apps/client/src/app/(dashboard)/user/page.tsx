@@ -5,6 +5,7 @@ import NextStepCard from '@/components/dashboard/NextStepCard'
 import { Progress } from '@/components/ui/progress'
 import { getCurrentUser } from '@/lib/get-current-user'
 import { Dot } from 'lucide-react'
+import Link from 'next/link'
 
 const UserDashboard = async () => {
   const user = await getCurrentUser()
@@ -17,9 +18,12 @@ const UserDashboard = async () => {
           <div className='flex flex-col gap-1'>
             <p className='font-semibold text-lg'>
               Welcome,{' '}
-              <span className='font-normal'>
-                {user?.firstName} {user?.lastName}{' '}
-              </span>
+              <Link
+                href={`user/${user.id}`}
+                className='font-normal hover:font-bold hover:underline transition-all duration-300'
+              >
+                {user?.firstName} {user?.lastName}
+              </Link>
             </p>
             <p className='text-sm'>
               You're 75% through your Growth Track Classes

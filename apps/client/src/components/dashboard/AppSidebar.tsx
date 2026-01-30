@@ -102,7 +102,7 @@ export async function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className='font-bold text-black dark:text-white'>
-            Application
+            {user.firstName} {user.lastName}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
