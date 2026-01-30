@@ -11,19 +11,22 @@ import {
 import { LogOut, Settings, User } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
-const Profile = () => {
+const Profile = ({ image }: { image: string }) => {
   const session = useSession()
 
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          {/* <Avatar>
-            <AvatarImage src='https://avatars.githubusercontent.com/u/1486366' />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar> */}
-          <User className='h-6 w-6 m-2' />
+          <Avatar>
+            <AvatarImage src={image} />
+            {/* <AvatarImage src='https://avatars.githubusercontent.com/u/1486366' /> */}
+            <AvatarFallback>
+              <User className='h-6 w-6 m-2' />
+            </AvatarFallback>
+          </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent sideOffset={10}>
           <DropdownMenuLabel>{session.data?.user.role}</DropdownMenuLabel>

@@ -1,13 +1,19 @@
+import { GroupAvatar } from '@/components/dashboard/GroupAvatar'
+import { NextStepChart } from '@/components/dashboard/NextStepChart'
+import { RightDrawer } from '@/components/dashboard/RightDrawer'
+import AuthForm from '@/components/forms/AuthForm'
 import { Button } from '@/components/ui/button'
 import { getCurrentUser } from '@/lib/get-current-user'
 import {
   ArrowRight,
   ChevronRight,
+  Dot,
   Download,
   Mail,
   MapPin,
   Phone,
   Pin,
+  SquarePen,
 } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
@@ -16,7 +22,7 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const user = await getCurrentUser()
 
   return (
-    <section className='flex flex-col lg:flex-row gap-4'>
+    <section className='flex flex-col lg:flex-row gap-4 lg:gap-1'>
       {/* LEFT  */}
       <section className='flex-2/3 p-4 lg:p-6'>
         {/* PROFILE  */}
@@ -47,6 +53,18 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
             <p className='flex text-sm gap-2 items-center'>
               <MapPin className='h-4 w-4' /> {user?.cell?.community.name}
             </p>
+            <div className='flex items-center justify-end p-3'>
+              <RightDrawer
+                trigger={
+                  <SquarePen className='h-4 w-4 hover:opacity-45 cursor-pointer transition-all duration-300' />
+                }
+                title='Edit Profile'
+                description='Edit your profile details'
+                // onSubmit={() => console.log('Profile Edited')}
+              >
+                <AuthForm />
+              </RightDrawer>
+            </div>
           </div>
           {/* Certificates  */}
           <div className='flex-1/3 w-full md:w-auto flex items-center justify-center'>
@@ -117,31 +135,8 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
                   <span className='pl-5 font-semibold'>Cell</span>
                 </p>
                 <div className='flex flex-row items-center'>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <p className='text-xs pl-3'>+4 members</p>
+                  <GroupAvatar />
+                  <p className='text-xs pl-3'>members</p>
                 </div>
               </div>
               <div className='h-10 w-10 overflow-hidden rounded-full ring-3 ring-black dark:ring-gray-500'>
@@ -160,39 +155,8 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
                   <span className='pl-5 font-semibold'>Department</span>
                 </p>
                 <div className='flex flex-row items-center'>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <p className='text-xs pl-3'>+28 members</p>
+                  <GroupAvatar />
+                  <p className='text-xs pl-3'>members</p>
                 </div>
               </div>
               <div className='h-10 w-10 overflow-hidden rounded-full ring-3 ring-black dark:ring-gray-500'>
@@ -211,31 +175,8 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
                   <span className='pl-5 font-semibold'>Small Group</span>
                 </p>
                 <div className='flex flex-row items-center'>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <div className='h-5 w-5 overflow-hidden rounded-full'>
-                    <Image
-                      src={user?.image!}
-                      alt={user?.username!}
-                      width={1000}
-                      height={1000}
-                    />
-                  </div>
-                  <p className='text-xs pl-3'>+200 members</p>
+                  <GroupAvatar />
+                  <p className='text-xs pl-3'>members</p>
                 </div>
               </div>
               <div className='h-10 w-10 overflow-hidden rounded-full ring-3 ring-black dark:ring-gray-500'>
@@ -251,8 +192,44 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
         </section>
       </section>
       {/* RIGHT  */}
-      <section className='flex-1/3 bg-amber-700'>
-        <p className='w-full'>RIGHT</p>
+      <section className='flex-1/3 p-4 lg:p-6 rounded-xl bg-gray-200 dark:bg-gray-900 lg:mt-6 mx-4 mb-5'>
+        <NextStepChart />
+        <section className='mt-4'>
+          <h2 className='font-bold mb-2'>Messages</h2>
+          <div className='flex flex-col gap-2'>
+            <div className=''>
+              <hr className='pb-1' />
+              <h3 className='text-sm font-semibold '>@PDolapo</h3>
+              <p className='text-xs font-light'>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea sint
+                voluptatem amet quae vero ad <span>...</span>
+              </p>
+            </div>
+            <div className=''>
+              <hr className='pb-1' />
+              <h3 className='text-sm font-semibold '>@PDolapo</h3>
+              <p className='text-xs font-light'>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea sint
+                voluptatem amet quae vero ad <span>...</span>
+              </p>
+            </div>
+            <div className=''>
+              <hr className='pb-1' />
+              <h3 className='text-sm font-semibold '>@PDolapo</h3>
+              <p className='text-xs font-light'>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea sint
+                voluptatem amet quae vero ad <span>...</span>
+              </p>
+            </div>
+          </div>
+          <div className='w-full flex items-center justify-end'>
+            <div className='flex gap-0.5 hover:cursor-pointer pr-3'>
+              <Dot className='w-3 h-3 text-white bg-gray-600 rounded-full' />
+              <Dot className='w-3 h-3 text-white bg-gray-600 rounded-full' />
+              <Dot className='w-3 h-3 text-white bg-gray-600 rounded-full' />
+            </div>
+          </div>
+        </section>
       </section>
     </section>
   )

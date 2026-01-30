@@ -43,6 +43,7 @@ import {
 import SignOutButton from '../SignOutButton'
 import { getCurrentUser } from '@/lib/get-current-user'
 import { redirect } from 'next/navigation'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
 // Menu items.
 const items = [
@@ -222,7 +223,14 @@ export async function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {user.firstName} {user.lastName}
+                  <Avatar>
+                    <AvatarImage src={user.image!} />
+                    {/* <AvatarImage src='https://avatars.githubusercontent.com/u/1486366' /> */}
+                    <AvatarFallback>
+                      <User className='h-6 w-6 m-2' />
+                    </AvatarFallback>
+                  </Avatar>{' '}
+                  {user.firstName} {user.lastName}
                   <ChevronUp className='ml-auto' />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

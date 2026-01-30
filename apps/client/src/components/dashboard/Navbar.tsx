@@ -1,10 +1,12 @@
-// import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { SidebarTrigger, useSidebar } from '../ui/sidebar'
 import Profile from '../Profile'
 import Theme from '../Theme'
 import Notification from './Notification'
+import { getCurrentUser } from '@/lib/get-current-user'
 
-const Navbar = () => {
+const Navbar = async () => {
+  const user = await getCurrentUser()
+
   return (
     <nav className='px-4 py-2 flex items-center justify-between sticky top-0 bg-background z-10 shadow-lg dark:shadow-slate-900'>
       {/* LEFT */}
@@ -14,7 +16,7 @@ const Navbar = () => {
         {/* USER MENU */}
         {/* <Bell className='h-6 w-6 m-2' /> */}
         <Notification />
-        <Profile />
+        <Profile image={user?.image!} />
         {/* THEME MENU */}
         <Theme />
       </div>
