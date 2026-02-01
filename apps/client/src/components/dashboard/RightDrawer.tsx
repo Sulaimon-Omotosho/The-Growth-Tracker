@@ -18,7 +18,7 @@ interface RightDrawerProps {
   title: string
   description?: string
   submitLabel?: string
-  onSubmit?: () => void
+  formId?: string
   children: ReactNode
 }
 
@@ -26,8 +26,8 @@ export function RightDrawer({
   trigger,
   title,
   description,
-  submitLabel = 'Submit',
-  onSubmit,
+  submitLabel,
+  formId,
   children,
 }: RightDrawerProps) {
   return (
@@ -40,7 +40,11 @@ export function RightDrawer({
         </DrawerHeader>
         <div className='no-scrollbar overflow-y-auto px-4'>{children}</div>
         <DrawerFooter>
-          {onSubmit && <Button onClick={onSubmit}>{submitLabel}</Button>}
+          {formId && (
+            <Button type='submit' form={formId}>
+              {submitLabel}
+            </Button>
+          )}
           <DrawerClose asChild>
             <Button variant='outline'>Cancel</Button>
           </DrawerClose>

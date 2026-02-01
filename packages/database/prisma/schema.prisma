@@ -53,6 +53,8 @@ model User {
   gender     Gender?
   role       Role    @default(MEMBER)
   image      String?
+  about      String?
+  dob      DateTime?
   provider   String?
   providerId String?
 

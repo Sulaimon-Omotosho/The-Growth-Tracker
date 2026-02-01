@@ -2,8 +2,10 @@ import { GroupAvatar } from '@/components/dashboard/GroupAvatar'
 import { NextStepChart } from '@/components/dashboard/NextStepChart'
 import { RightDrawer } from '@/components/dashboard/RightDrawer'
 import AuthForm from '@/components/forms/AuthForm'
+import UserForm from '@/components/forms/UserForm'
 import { Button } from '@/components/ui/button'
 import { getCurrentUser } from '@/lib/get-current-user'
+import { User } from '@repo/db'
 import {
   ArrowRight,
   ChevronRight,
@@ -60,9 +62,10 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
                 }
                 title='Edit Profile'
                 description='Edit your profile details'
-                // onSubmit={() => console.log('Profile Edited')}
+                submitLabel='Save Changes'
+                formId='profile-edit'
               >
-                <AuthForm />
+                <UserForm user={user!} />
               </RightDrawer>
             </div>
           </div>
@@ -73,8 +76,9 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
                 <Image
                   src='/assets/cert.png'
                   alt={user?.username!}
-                  width={1000}
-                  height={1000}
+                  width={500}
+                  height={500}
+                  loading='eager'
                   className='w-auto'
                 />
               </div>
