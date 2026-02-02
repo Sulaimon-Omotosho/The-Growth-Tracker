@@ -30,7 +30,7 @@ router.post('/login', async (req: Request, res: Response) => {
     return res.status(401).json({ message: 'Invalid credentials' })
   }
 
-  const valid = await bcrypt.compare(password, user.password)
+  const valid = await bcrypt.compare(password, user.password as string)
   if (!valid) {
     return res.status(401).json({ message: 'Invalid credentials' })
   }
@@ -38,7 +38,7 @@ router.post('/login', async (req: Request, res: Response) => {
   const accessToken = jwt.sign(
     { sub: user.id, role: user.role },
     process.env.JWT_SECRET!,
-    { expiresIn: '1h' }
+    { expiresIn: '1h' },
   )
 
   return res.json({
@@ -77,7 +77,7 @@ router.post('/register', async (req: Request, res: Response) => {
     const accessToken = jwt.sign(
       { sub: user.id, role: user.role },
       process.env.JWT_SECRET!,
-      { expiresIn: '1h' }
+      { expiresIn: '1h' },
     )
 
     return res.status(201).json({
