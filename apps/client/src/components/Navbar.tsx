@@ -6,9 +6,11 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import SignOutButton from './SignOutButton'
 import Theme from './Theme'
 import Profile from './Profile'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions)
+  const user = await getCurrentUser()
 
   return (
     <nav className='w-full bg-white dark:bg-black border-b border-gray-400 shadow-3xl fixed z-10 md:px-10 lg:px-30'>
@@ -36,7 +38,7 @@ const Navbar = async () => {
             <p className='hidden md:block font-bold'>Home</p>
           </Link>
           {session?.user ? (
-            <Profile />
+            <Profile image={user.image} />
           ) : (
             <Link
               href='/sign-in'

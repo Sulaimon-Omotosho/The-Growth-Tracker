@@ -2,7 +2,7 @@ import { SidebarTrigger, useSidebar } from '../ui/sidebar'
 import Profile from '../Profile'
 import Theme from '../Theme'
 import Notification from './Notification'
-import { getCurrentUser } from '@/lib/get-current-user'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 
 const Navbar = async () => {
   const user = await getCurrentUser()

@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import { prisma } from '@repo/db'
+import jwt from 'jsonwebtoken'
 
 // const handler = NextAuth({
 export const authOptions: NextAuthOptions = {
@@ -63,16 +64,14 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'google' && profile) {
         const email = user.email as string
 
+        let dbUser = await prisma.user.findUnique({ where: { email } })
+
         const fullName = (profile as any).name ?? ''
         const [firstName, ...rest] = fullName.split(' ')
         const lastName = rest.join(' ')
 
-        const existingUser = await prisma.user.findUnique({
-          where: { email },
-        })
-
-        if (!existingUser) {
-          await prisma.user.create({
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
             data: {
               email,
               firstName: (profile as any).given_name ?? firstName,
@@ -84,20 +83,48 @@ export const authOptions: NextAuthOptions = {
             },
           })
         }
+
+        user.id = dbUser.id
+        user.role = dbUser.role
       }
       return true
     },
-
-    // async signIn() {
-    //   return true
-    // },
 
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
         token.email = user.email
         token.role = user.role
+        token.accessToken = user.accessToken
+
+        // Google Token
+        if (!user.accessToken) {
+          token.accessToken = jwt.sign(
+            { sub: user.id, role: user.role },
+            process.env.JWT_SECRET!,
+            { expiresIn: '1h' },
+          )
+        }
       }
+
+      // Google Token
+      // if (account?.provider === 'google' && user) {
+      //   const dbUser = await prisma.user.findUnique({
+      //     where: { email: user.email! },
+      //   })
+
+      //   if (dbUser) {
+      //     token.id = dbUser.id
+      //     token.email = dbUser.email
+      //     token.role = dbUser.role
+
+      //     token.accessToken = jwt.sign(
+      //       { sub: dbUser.id, role: dbUser.role },
+      //       process.env.JWT_SECRET!,
+      //       { expiresIn: '1h' },
+      //     )
+      //   }
+      // }
       return token
     },
 

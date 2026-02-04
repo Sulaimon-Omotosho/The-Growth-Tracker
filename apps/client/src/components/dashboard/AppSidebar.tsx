@@ -41,7 +41,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import SignOutButton from '../SignOutButton'
-import { getCurrentUser } from '@/lib/get-current-user'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 import { redirect } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 
