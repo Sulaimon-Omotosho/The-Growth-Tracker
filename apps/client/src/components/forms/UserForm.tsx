@@ -38,6 +38,8 @@ const gender = [
   { label: 'Female', value: 'FEMALE' },
 ] as const
 
+const usersUrl = process.env.USERS_SERVICE_URL!
+
 const UserForm = ({ user }: { user: User }) => {
   const router = useRouter()
 
@@ -58,7 +60,8 @@ const UserForm = ({ user }: { user: User }) => {
   async function onSubmit(data: z.infer<typeof UserFormSchema>) {
     // console.log('User Form', data)
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
+      // const res = await fetch(`/api/users/${user.id}`, {
+      const res = await fetch(`${usersUrl}/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
