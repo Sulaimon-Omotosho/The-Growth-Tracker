@@ -1,11 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Home, LogIn } from 'lucide-react'
+import { Home, LogIn, User } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import SignOutButton from './SignOutButton'
 import Theme from './Theme'
 import Profile from './Profile'
+// import { getCurrentUser } from '@/lib/get-current-user'
 import { getCurrentUser } from '@/lib/getCurrentUser'
 
 const Navbar = async () => {
@@ -38,7 +39,7 @@ const Navbar = async () => {
             <p className='hidden md:block font-bold'>Home</p>
           </Link>
           {session?.user ? (
-            <Profile image={user.image} />
+            <Profile image={user.image ?? <User />} />
           ) : (
             <Link
               href='/sign-in'

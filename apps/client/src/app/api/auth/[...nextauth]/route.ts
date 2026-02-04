@@ -4,7 +4,8 @@ import Google from 'next-auth/providers/google'
 import { prisma } from '@repo/db'
 import jwt from 'jsonwebtoken'
 
-// const handler = NextAuth({
+const authUrl = process.env.AUTH_SERVICE_URL!
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.AUTH_SECRET,
   // debug: true,
@@ -36,7 +37,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null
 
-        const res = await fetch('http://localhost:8000/auth/login', {
+        const res = await fetch(`${authUrl}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -107,24 +108,6 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // Google Token
-      // if (account?.provider === 'google' && user) {
-      //   const dbUser = await prisma.user.findUnique({
-      //     where: { email: user.email! },
-      //   })
-
-      //   if (dbUser) {
-      //     token.id = dbUser.id
-      //     token.email = dbUser.email
-      //     token.role = dbUser.role
-
-      //     token.accessToken = jwt.sign(
-      //       { sub: dbUser.id, role: dbUser.role },
-      //       process.env.JWT_SECRET!,
-      //       { expiresIn: '1h' },
-      //     )
-      //   }
-      // }
       return token
     },
 
@@ -139,7 +122,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    // ✅ Ensure Google users get a role
     async createUser({ user }) {
       await prisma.user.update({
         where: { id: user.id },

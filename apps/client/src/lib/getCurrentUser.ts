@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 
-const USERS_SERVICE_URL = process.env.USERS_SERVICE_URL!
+const usersUrl = process.env.USERS_SERVICE_URL!
 
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions)
@@ -11,7 +11,7 @@ export async function getCurrentUser() {
     return null
   }
 
-  const res = await fetch(`${USERS_SERVICE_URL}/users/me`, {
+  const res = await fetch(`${usersUrl}/users/me`, {
     headers: {
       Authorization: `Bearer ${session.accessToken}`,
     },
