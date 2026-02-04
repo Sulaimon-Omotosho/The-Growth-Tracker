@@ -71,6 +71,7 @@ router.post('/register', async (req: Request, res: Response) => {
       data: {
         email,
         password: hashedPassword,
+        role: 'MEMBER',
       },
     })
 

@@ -1,6 +1,6 @@
 'use client'
 
-import Autoplay from 'embla-carousel-autoplay'
+// import Autoplay from 'embla-carousel-autoplay'
 
 import {
   Card,

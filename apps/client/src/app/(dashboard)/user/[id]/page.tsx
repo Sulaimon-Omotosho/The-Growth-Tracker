@@ -4,7 +4,7 @@ import { RightDrawer } from '@/components/dashboard/RightDrawer'
 import AuthForm from '@/components/forms/AuthForm'
 import UserForm from '@/components/forms/UserForm'
 import { Button } from '@/components/ui/button'
-import { getCurrentUser } from '@/lib/get-current-user'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 import { User } from '@repo/db'
 import {
   ArrowRight,

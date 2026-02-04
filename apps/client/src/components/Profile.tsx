@@ -23,6 +23,7 @@ const Profile = ({ image }: { image: string }) => {
           <Avatar>
             <AvatarImage src={image} />
             {/* <AvatarImage src='https://avatars.githubusercontent.com/u/1486366' /> */}
+
             <AvatarFallback>
               <User className='h-6 w-6 m-2' />
             </AvatarFallback>
