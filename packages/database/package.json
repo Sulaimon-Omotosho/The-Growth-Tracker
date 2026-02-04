@@ -6,7 +6,9 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:deploy": "prisma migrate deploy",
-    "build": "prisma generate && tsc"
+    "prebuild": "prisma generate",
+    "build": "tsc",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
