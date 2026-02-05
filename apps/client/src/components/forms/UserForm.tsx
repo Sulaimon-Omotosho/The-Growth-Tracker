@@ -43,25 +43,25 @@ const usersUrl = process.env.USERS_SERVICE_URL!
 const UserForm = ({ user }: { user: User }) => {
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof UserFormSchema>>({
+  const form = useForm<z.input<typeof UserFormSchema>>({
     resolver: zodResolver(UserFormSchema),
     defaultValues: {
-      firstName: user?.firstName! ?? '',
+      firstName: user?.firstName ?? '',
       lastName: user?.lastName ?? '',
       username: user?.username ?? '',
       email: user?.email ?? '',
       phone: user?.phone ?? '',
       gender: user?.gender ?? 'MALE',
-      dob: user?.dob ?? undefined,
+      dob: user.dob ? user.dob.toISOString().slice(0, 10) : undefined,
       about: user?.about ?? '',
     },
   })
 
-  async function onSubmit(data: z.infer<typeof UserFormSchema>) {
+  async function onSubmit(data: z.output<typeof UserFormSchema>) {
     // console.log('User Form', data)
     try {
-      // const res = await fetch(`/api/users/${user.id}`, {
-      const res = await fetch(`${usersUrl}/users/${user.id}`, {
+      const res = await fetch(`/api/users/${user.id}`, {
+        // const res = await fetch(`${usersUrl}/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const UserForm = ({ user }: { user: User }) => {
 
   return (
     <div className='w-full sm:max-w-md no-scrollbar'>
-      <form id='profile-edit' onSubmit={form.handleSubmit(onSubmit)}>
+      <form id='profile-edit' onSubmit={form.handleSubmit(onSubmit as any)}>
         <FieldGroup>
           <Controller
             name='firstName'
@@ -224,13 +224,13 @@ const UserForm = ({ user }: { user: User }) => {
                   type='date'
                   {...field}
                   id='dob'
-                  value={field.value as any}
+                  value={field.value as string}
                   // value={
-                  //   field.value instanceof Date
-                  //     ? field.value.toISOString().split('T')[0]
+                  //   field.value
+                  //     ? field.value
                   //     : ''
                   // }
-                  // onChange={(e) => field.onChange(e.target.value)}
+                  // onChange={(e) => field.onChange(e.target.value || undefined)}
                   aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && (

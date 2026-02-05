@@ -24,13 +24,15 @@ export const UserFormSchema = z.object({
     .optional(),
   gender: GenderEnum.optional(),
   about: z.string().max(200, 'Please keep it under 200 characters!').optional(),
-  dob: z.coerce
+  dob: z
     .date()
-    .max(new Date(), 'Date of birth cant be in the future!')
-    .optional(),
-  // dob: z.coerce.date().optional(),
-  // .or(z.literal(''))
-  // .transform((v) => (v ? new Date(v) : undefined)),
+    .optional()
+    .transform((v) => (v ? new Date(v) : undefined)),
+
+  // dob: z.coerce
+  //   .date()
+  //   .max(new Date(), 'Date of birth cant be in the future!')
+  //   .optional(),
   // image: z
   //   .url('Invalid image URL')
   //   .optional()

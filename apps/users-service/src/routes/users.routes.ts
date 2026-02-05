@@ -83,6 +83,9 @@ router.get('/all', authenticate, async (req: AuthRequest, res) => {
   res.json(user)
 })
 
+// Update User
+// router.PATCH
+
 router.get('/debug/users', async (_req, res) => {
   const users = await prisma.user.findMany({
     select: { id: true, username: true, email: true, role: true },
