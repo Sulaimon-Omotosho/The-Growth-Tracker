@@ -4,3 +4,16 @@ export interface AuthRequest extends Request {
     role: string
   }
 }
+
+export interface User {
+  id: string
+  firstName: string
+  lastName: string
+  username: string
+  email?: string
+  phone?: string
+  gender?: 'MALE' | 'FEMALE'
+  dob?: Date
+  about?: string
+  role: string
+}

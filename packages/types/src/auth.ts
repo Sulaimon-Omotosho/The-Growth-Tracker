@@ -24,7 +24,7 @@ export const UserFormSchema = z.object({
     .optional(),
   gender: GenderEnum.optional(),
   about: z.string().max(200, 'Please keep it under 200 characters!').optional(),
-  dob: z
+  dob: z.coerce
     .date()
     .optional()
     .transform((v) => (v ? new Date(v) : undefined)),

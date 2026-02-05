@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UserFormSchema } from '@repo/types'
+import { User, UserFormSchema } from '@repo/types'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 
@@ -30,7 +30,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import { User } from '@repo/db'
+// import { User } from '@repo/db'
 import { useRouter } from 'next/navigation'
 
 const gender = [
