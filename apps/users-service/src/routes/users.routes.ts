@@ -83,8 +83,49 @@ router.get('/all', authenticate, async (req: AuthRequest, res) => {
   res.json(user)
 })
 
-// Update User
-// router.PATCH
+// Update Profile
+router.patch('/me', authenticate, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user?.id
+
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' })
+    }
+
+    const { firstName, lastName, username, email, phone, gender, dob, about } =
+      req.body
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName,
+        lastName,
+        username,
+        email,
+        phone,
+        gender,
+        dob: dob ? new Date(dob) : undefined,
+        about,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        email: true,
+        phone: true,
+        gender: true,
+        dob: true,
+        about: true,
+      },
+    })
+
+    res.json(updatedUser)
+  } catch (error) {
+    console.error('Failed to update:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+})
 
 router.get('/debug/users', async (_req, res) => {
   const users = await prisma.user.findMany({

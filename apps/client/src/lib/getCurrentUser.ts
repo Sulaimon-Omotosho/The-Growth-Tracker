@@ -1,14 +1,15 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { redirect } from 'next/navigation'
 
 const usersUrl = process.env.USERS_SERVICE_URL!
 
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions)
-  // console.log('Session in server:', session)
+  // console.log('accessToken in server:', session?.accessToken)
 
   if (!session?.accessToken) {
-    return null
+    redirect('/auth/logout')
   }
 
   const res = await fetch(`${usersUrl}/users/me`, {
@@ -18,9 +19,12 @@ export async function getCurrentUser() {
     cache: 'no-store',
   })
 
+  if (res.status === 401) {
+    redirect('/auth/logout')
+  }
+
   if (!res.ok) {
-    console.error('Failed to fetch user:', await res.text())
-    return null
+    throw new Error('Failed to fetch current user')
   }
 
   return res.json()

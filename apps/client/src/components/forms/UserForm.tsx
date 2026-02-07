@@ -30,7 +30,6 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-// import { User } from '@repo/db'
 import { useRouter } from 'next/navigation'
 
 const gender = [
@@ -38,7 +37,8 @@ const gender = [
   { label: 'Female', value: 'FEMALE' },
 ] as const
 
-const usersUrl = process.env.USERS_SERVICE_URL!
+const usersUrl = process.env.NEXT_PUBLIC_USERS_SERVICE_URL
+console.log('before:', usersUrl)
 
 const UserForm = ({ user }: { user: User }) => {
   const router = useRouter()
@@ -52,21 +52,24 @@ const UserForm = ({ user }: { user: User }) => {
       email: user?.email ?? '',
       phone: user?.phone ?? '',
       gender: user?.gender ?? 'MALE',
-      dob: user.dob ? user.dob.toISOString().slice(0, 10) : undefined,
+      dob: user.dob ? new Date(user.dob).toISOString().slice(0, 10) : undefined,
       about: user?.about ?? '',
     },
   })
 
   async function onSubmit(data: z.output<typeof UserFormSchema>) {
     // console.log('User Form', data)
+
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
-        // const res = await fetch(`${usersUrl}/users/${user.id}`, {
+      const res = await fetch('/api/users/me', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          dob: data.dob ? new Date(data.dob).toISOString() : undefined,
+        }),
       })
 
       if (!res.ok) {

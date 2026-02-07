@@ -36,7 +36,7 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
               {user.image ? (
                 <Image
                   src={user?.image!}
-                  alt={user?.username!}
+                  alt={user?.username! || 'Profile'}
                   width={1000}
                   height={1000}
                 />

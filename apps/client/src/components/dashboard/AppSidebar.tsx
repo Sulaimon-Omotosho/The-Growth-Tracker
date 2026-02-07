@@ -77,9 +77,9 @@ const items = [
 export async function AppSidebar() {
   const user = await getCurrentUser()
 
-  if (!user) {
-    redirect('/sign-in')
-  }
+  // if (!user) {
+  //   redirect('/sign-in')
+  // }
 
   return (
     <Sidebar collapsible='icon'>

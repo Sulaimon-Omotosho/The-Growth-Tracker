@@ -14,15 +14,9 @@ export const authenticate = (
   next: NextFunction,
 ) => {
   const authHeader = req.get('authorization')
-  // const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    // console.log('Missing Authorization header')
     return res.status(401).json({ message: 'Unauthorized: No auth header' })
   }
-
-  // if (!authHeader?.startsWith('Bearer')) {
-  //   return res.status(401).json({ message: 'Unauthorized' })
-  // }
 
   const token = authHeader.split(' ')[1]
 
