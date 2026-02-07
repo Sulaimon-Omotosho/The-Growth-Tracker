@@ -5,11 +5,13 @@ import z from 'zod'
 declare module 'next-auth' {
   interface Session {
     accessToken?: string
+    error?: string
     user: {
       id: string
       email?: string | null
       role: string
-    }
+      accessToken: string
+    } & DefaultSession['user']
   }
 
   interface User {

@@ -4,8 +4,7 @@ import { RightDrawer } from '@/components/dashboard/RightDrawer'
 import AuthForm from '@/components/forms/AuthForm'
 import UserForm from '@/components/forms/UserForm'
 import { Button } from '@/components/ui/button'
-import { getCurrentUser } from '@/lib/get-current-user'
-import { User } from '@repo/db'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 import {
   ArrowRight,
   ChevronRight,
@@ -16,6 +15,7 @@ import {
   Phone,
   Pin,
   SquarePen,
+  UserIcon,
 } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
@@ -31,13 +31,17 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
         <section className='flex flex-col md:flex-row justify-center md:justify-between gap-6 p-4  rounded-xl bg-gray-200 dark:bg-gray-900  mb-5'>
           {/* Profile Image  */}
           <div className='flex-1/3 w-full md:w-auto flex items-center justify-center'>
-            <div className='h-40 w-40 overflow-hidden rounded-full ring-2 ring-black'>
-              <Image
-                src={user?.image!}
-                alt={user?.username!}
-                width={1000}
-                height={1000}
-              />
+            <div className='h-40 w-40 overflow-hidden flex items-center justify-center rounded-full ring-2 ring-black'>
+              {user.image ? (
+                <Image
+                  src={user?.image!}
+                  alt={user?.username! || 'Profile'}
+                  width={1000}
+                  height={1000}
+                />
+              ) : (
+                <UserIcon className='w-30 h-30' />
+              )}
             </div>
           </div>
           {/* Details  */}
@@ -75,7 +79,7 @@ const ProfilePage = async ({ params }: { params: Promise<{ id: string }> }) => {
               <div className=''>
                 <Image
                   src='/assets/cert.png'
-                  alt={user?.username!}
+                  alt='certificate'
                   width={500}
                   height={500}
                   loading='eager'

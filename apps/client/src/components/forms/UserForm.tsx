@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UserFormSchema } from '@repo/types'
+import { User, UserFormSchema } from '@repo/types'
 import { Controller, useForm } from 'react-hook-form'
 import z from 'zod'
 
@@ -30,7 +30,6 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import { User } from '@repo/db'
 import { useRouter } from 'next/navigation'
 
 const gender = [
@@ -38,32 +37,39 @@ const gender = [
   { label: 'Female', value: 'FEMALE' },
 ] as const
 
+const usersUrl = process.env.NEXT_PUBLIC_USERS_SERVICE_URL
+console.log('before:', usersUrl)
+
 const UserForm = ({ user }: { user: User }) => {
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof UserFormSchema>>({
+  const form = useForm<z.input<typeof UserFormSchema>>({
     resolver: zodResolver(UserFormSchema),
     defaultValues: {
-      firstName: user?.firstName! ?? '',
+      firstName: user?.firstName ?? '',
       lastName: user?.lastName ?? '',
       username: user?.username ?? '',
       email: user?.email ?? '',
       phone: user?.phone ?? '',
       gender: user?.gender ?? 'MALE',
-      dob: user?.dob ?? undefined,
+      dob: user.dob ? new Date(user.dob).toISOString().slice(0, 10) : undefined,
       about: user?.about ?? '',
     },
   })
 
-  async function onSubmit(data: z.infer<typeof UserFormSchema>) {
+  async function onSubmit(data: z.output<typeof UserFormSchema>) {
     // console.log('User Form', data)
+
     try {
-      const res = await fetch(`/api/users/${user.id}`, {
+      const res = await fetch('/api/users/me', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          dob: data.dob ? new Date(data.dob).toISOString() : undefined,
+        }),
       })
 
       if (!res.ok) {
@@ -81,7 +87,7 @@ const UserForm = ({ user }: { user: User }) => {
 
   return (
     <div className='w-full sm:max-w-md no-scrollbar'>
-      <form id='profile-edit' onSubmit={form.handleSubmit(onSubmit)}>
+      <form id='profile-edit' onSubmit={form.handleSubmit(onSubmit as any)}>
         <FieldGroup>
           <Controller
             name='firstName'
@@ -221,13 +227,13 @@ const UserForm = ({ user }: { user: User }) => {
                   type='date'
                   {...field}
                   id='dob'
-                  value={field.value as any}
+                  value={field.value as string}
                   // value={
-                  //   field.value instanceof Date
-                  //     ? field.value.toISOString().split('T')[0]
+                  //   field.value
+                  //     ? field.value
                   //     : ''
                   // }
-                  // onChange={(e) => field.onChange(e.target.value)}
+                  // onChange={(e) => field.onChange(e.target.value || undefined)}
                   aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && (

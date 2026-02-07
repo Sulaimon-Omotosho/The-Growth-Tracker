@@ -1,10 +1,12 @@
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { AttendanceChart } from '@/components/dashboard/AttendanceChart'
 import Events from '@/components/dashboard/Events'
 import MessageCard from '@/components/dashboard/MessageCard'
 import NextStepCard from '@/components/dashboard/NextStepCard'
 import { Progress } from '@/components/ui/progress'
-import { getCurrentUser } from '@/lib/get-current-user'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 import { Dot } from 'lucide-react'
+import { getServerSession } from 'next-auth'
 import Link from 'next/link'
 
 const UserDashboard = async () => {

@@ -1,22 +1,14 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import TestUser from '@/components/TestUser'
-import { getCurrentUser } from '@/lib/get-current-user'
-import { getServerSession } from 'next-auth'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 
 const Test = async () => {
-  const session = await getServerSession(authOptions)
-
   const user = await getCurrentUser()
-
-  // console.log('Session', session)
-  // console.log('User', user)
+  // console.log('user:', user)
 
   return (
-    <div className=''>
-      <div className='pt-40 pb-20'>
-        <TestUser />
-        <p className=''>{user?.id || 'null'}</p>
-      </div>
+    <div className='pt-40 pb-20 text-center'>
+      <TestUser />
+      <p className='mt-6 text-xl'>DB User ID: {user?.id ?? 'null'}</p>
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
-import { prisma } from '@repo/db'
 
-// const handler = NextAuth({
+const authUrl = process.env.AUTH_SERVICE_URL!
+
 export const authOptions: NextAuthOptions = {
   secret: process.env.AUTH_SECRET,
   // debug: true,
@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null
 
-        const res = await fetch('http://localhost:8000/auth/login', {
+        const res = await fetch(`${authUrl}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -45,7 +45,6 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!res.ok) return null
-
         const user = await res.json()
 
         return {
@@ -61,43 +60,45 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google' && profile) {
-        const email = user.email as string
-
-        const fullName = (profile as any).name ?? ''
-        const [firstName, ...rest] = fullName.split(' ')
-        const lastName = rest.join(' ')
-
-        const existingUser = await prisma.user.findUnique({
-          where: { email },
-        })
-
-        if (!existingUser) {
-          await prisma.user.create({
-            data: {
-              email,
-              firstName: (profile as any).given_name ?? firstName,
-              lastName: (profile as any).family_name ?? lastName,
+        try {
+          const res = await fetch(`${authUrl}/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: user.email,
+              firstName: (profile as any).given_name,
+              lastName: (profile as any).family_name,
               image: user.image,
               provider: 'google',
               providerId: account.providerAccountId,
-              role: 'MEMBER',
-            },
+            }),
           })
+
+          if (!res.ok) {
+            console.error('AUTH API ERROR:', await res.text())
+            return false
+          }
+
+          const apiUser = await res.json()
+          user.id = apiUser.id
+          user.role = apiUser.role
+          user.accessToken = apiUser.accessToken
+        } catch (err) {
+          console.error('GOOGLE AUTH FETCH FAILED:', err)
+          return false
         }
       }
       return true
     },
 
-    // async signIn() {
-    //   return true
-    // },
-
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
         token.email = user.email
-        token.role = user.role
+        token.role = (user as any).role
+        token.accessToken = (user as any).accessToken
       }
+
       return token
     },
 
@@ -107,21 +108,21 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string
         session.user.email = token.email as string
         session.accessToken = token.accessToken as string
+        session.error = token.error as string | undefined
       }
       return session
     },
   },
-  events: {
-    // ✅ Ensure Google users get a role
-    async createUser({ user }) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          role: 'MEMBER',
-        },
-      })
-    },
-  },
+  // events: {
+  //   async createUser({ user }) {
+  //     await prisma.user.update({
+  //       where: { id: user.id },
+  //       data: {
+  //         role: 'MEMBER',
+  //       },
+  //     })
+  //   },
+  // },
 }
 
 const handler = NextAuth(authOptions)

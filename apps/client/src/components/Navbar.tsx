@@ -1,14 +1,27 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Home, LogIn } from 'lucide-react'
+import { Home, LogIn, User } from 'lucide-react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import SignOutButton from './SignOutButton'
 import Theme from './Theme'
 import Profile from './Profile'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions)
+
+  // const session = await authGuard()
+  // const user = await getCurrentUser()
+
+  let user: any = null
+
+  try {
+    user = session?.accessToken ? await getCurrentUser() : null
+  } catch (err) {
+    console.error('Failed to fetch user:', err)
+    user = null
+  }
 
   return (
     <nav className='w-full bg-white dark:bg-black border-b border-gray-400 shadow-3xl fixed z-10 md:px-10 lg:px-30'>
@@ -35,8 +48,8 @@ const Navbar = async () => {
             <Home className='w-6 h-6 md:hidden ' />
             <p className='hidden md:block font-bold'>Home</p>
           </Link>
-          {session?.user ? (
-            <Profile />
+          {user ? (
+            <Profile image={user.image ?? <User />} />
           ) : (
             <Link
               href='/sign-in'

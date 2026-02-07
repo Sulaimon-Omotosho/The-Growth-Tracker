@@ -2,7 +2,7 @@ import { SidebarTrigger, useSidebar } from '../ui/sidebar'
 import Profile from '../Profile'
 import Theme from '../Theme'
 import Notification from './Notification'
-import { getCurrentUser } from '@/lib/get-current-user'
+import { getCurrentUser } from '@/lib/getCurrentUser'
 
 const Navbar = async () => {
   const user = await getCurrentUser()
@@ -16,7 +16,7 @@ const Navbar = async () => {
         {/* USER MENU */}
         {/* <Bell className='h-6 w-6 m-2' /> */}
         <Notification />
-        <Profile image={user?.image!} />
+        {user ? <Profile image={user.image} /> : null}
         {/* THEME MENU */}
         <Theme />
       </div>
