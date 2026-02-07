@@ -5,7 +5,6 @@ import AuthForm from '@/components/forms/AuthForm'
 import UserForm from '@/components/forms/UserForm'
 import { Button } from '@/components/ui/button'
 import { getCurrentUser } from '@/lib/getCurrentUser'
-import { User } from '@repo/db'
 import {
   ArrowRight,
   ChevronRight,
