@@ -1,8 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
-import { prisma } from '@repo/db'
-import jwt from 'jsonwebtoken'
 
 const authUrl = process.env.AUTH_SERVICE_URL!
 
@@ -47,7 +45,6 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!res.ok) return null
-
         const user = await res.json()
 
         return {
@@ -63,30 +60,33 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google' && profile) {
-        const email = user.email as string
-
-        let dbUser = await prisma.user.findUnique({ where: { email } })
-
-        const fullName = (profile as any).name ?? ''
-        const [firstName, ...rest] = fullName.split(' ')
-        const lastName = rest.join(' ')
-
-        if (!dbUser) {
-          dbUser = await prisma.user.create({
-            data: {
-              email,
-              firstName: (profile as any).given_name ?? firstName,
-              lastName: (profile as any).family_name ?? lastName,
+        try {
+          const res = await fetch(`${authUrl}/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: user.email,
+              firstName: (profile as any).given_name,
+              lastName: (profile as any).family_name,
               image: user.image,
               provider: 'google',
               providerId: account.providerAccountId,
-              role: 'MEMBER',
-            },
+            }),
           })
-        }
 
-        user.id = dbUser.id
-        user.role = dbUser.role
+          if (!res.ok) {
+            console.error('AUTH API ERROR:', await res.text())
+            return false
+          }
+
+          const apiUser = await res.json()
+          user.id = apiUser.id
+          user.role = apiUser.role
+          user.accessToken = apiUser.accessToken
+        } catch (err) {
+          console.error('GOOGLE AUTH FETCH FAILED:', err)
+          return false
+        }
       }
       return true
     },
@@ -95,17 +95,8 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.email = user.email
-        token.role = user.role
-        token.accessToken = user.accessToken
-
-        // Google Token
-        if (!user.accessToken) {
-          token.accessToken = jwt.sign(
-            { sub: user.id, role: user.role },
-            process.env.JWT_SECRET!,
-            { expiresIn: '1h' },
-          )
-        }
+        token.role = (user as any).role
+        token.accessToken = (user as any).accessToken
       }
 
       return token
@@ -117,20 +108,21 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string
         session.user.email = token.email as string
         session.accessToken = token.accessToken as string
+        session.error = token.error as string | undefined
       }
       return session
     },
   },
-  events: {
-    async createUser({ user }) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          role: 'MEMBER',
-        },
-      })
-    },
-  },
+  // events: {
+  //   async createUser({ user }) {
+  //     await prisma.user.update({
+  //       where: { id: user.id },
+  //       data: {
+  //         role: 'MEMBER',
+  //       },
+  //     })
+  //   },
+  // },
 }
 
 const handler = NextAuth(authOptions)

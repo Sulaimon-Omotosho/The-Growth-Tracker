@@ -9,24 +9,26 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '@repo/db'
 
 const router: ExpressRouter = Router()
+// CREATE TOKEN
+export function issueAccessToken(user: { id: string; role: string }) {
+  return jwt.sign({ sub: user.id, role: user.role }, process.env.JWT_SECRET!, {
+    expiresIn: '24h',
+  })
+}
 
+// LOGIN
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body
-  console.log('the email', email)
-
-  // TEMP USER
-  // const user = {
-  //   id: '1',
-  //   email: 'admin@church.com',
-  //   password: await bcrypt.hash('password123', 10),
-  //   role: 'ADMIN',
-  // }
+  // console.log('the email', email)
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Missing credentials' })
+  }
 
   const user = await prisma.user.findUnique({
     where: { email },
   })
 
-  if (!user) {
+  if (!user || !user.password) {
     return res.status(401).json({ message: 'Invalid credentials' })
   }
 
@@ -35,11 +37,10 @@ router.post('/login', async (req: Request, res: Response) => {
     return res.status(401).json({ message: 'Invalid credentials' })
   }
 
-  const accessToken = jwt.sign(
-    { sub: user.id, role: user.role },
-    process.env.JWT_SECRET!,
-    { expiresIn: '1h' },
-  )
+  const accessToken = issueAccessToken({
+    id: user.id,
+    role: user.role,
+  })
 
   return res.json({
     id: user.id,
@@ -49,47 +50,104 @@ router.post('/login', async (req: Request, res: Response) => {
   })
 })
 
+// REGISTER USER
 router.post('/register', async (req: Request, res: Response) => {
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    provider = 'credentials',
+    providerId,
+    image,
+  } = req.body
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' })
+  }
+
+  if (provider === 'credentials' && !password) {
+    return res.status(400).json({ message: 'Password is required' })
+  }
+
+  if (provider === 'google' && !providerId) {
+    return res.status(400).json({ message: 'Missing Google providerId' })
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  })
+
+  if (existingUser) {
+    return res.status(409).json({ message: 'User already exists' })
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: password ? await bcrypt.hash(password, 13) : null,
+      firstName,
+      lastName,
+      image,
+      provider,
+      providerId,
+      role: 'MEMBER',
+    },
+  })
+
+  const accessToken = issueAccessToken({
+    id: user.id,
+    role: user.role,
+  })
+
+  return res.status(201).json({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    accessToken,
+  })
+})
+
+// GOOGLE
+router.post('/google', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body
+    const { email, firstName, lastName, image, providerId } = req.body
+    console.log('google:', email)
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Missing fields' })
+    if (!email || !providerId) {
+      return res.status(400).json({ message: 'Invalid Google payload' })
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    })
+    let user = await prisma.user.findUnique({ where: { email } })
 
-    if (existingUser) {
-      return res.status(409).json({ message: 'User already exists!' })
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          firstName,
+          lastName,
+          image,
+          provider: 'google',
+          providerId,
+          role: 'MEMBER',
+        },
+      })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 13)
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role: 'MEMBER',
-      },
+    const accessToken = issueAccessToken({
+      id: user.id,
+      role: user.role,
     })
 
-    const accessToken = jwt.sign(
-      { sub: user.id, role: user.role },
-      process.env.JWT_SECRET!,
-      { expiresIn: '1h' },
-    )
-
-    return res.status(201).json({
+    return res.json({
       id: user.id,
       email: user.email,
       role: user.role,
       accessToken,
     })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ message: 'Server Error!' })
+  } catch (err) {
+    console.error('GOOGLE AUTH API ERROR:', err)
+    return res.status(500).json({ message: 'Google auth failed' })
   }
 })
 

@@ -2,6 +2,17 @@
 
 import { useSession } from 'next-auth/react'
 
+// const { data: session } = useSession()
+
+// await fetch(`${process.env.NEXT_PUBLIC_USERS_SERVICE_URL}/users/${user.id}`, {
+//   method: 'PATCH',
+//   headers: {
+//     Authorization: `Bearer ${session?.accessToken}`,
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify(data),
+// })
+
 const TestUser = () => {
   const { data: session, status } = useSession()
   if (status === 'loading') return <p>Loading...</p>
