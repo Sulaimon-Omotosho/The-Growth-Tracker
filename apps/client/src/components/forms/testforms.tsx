@@ -89,7 +89,7 @@ const AuthForm = () => {
       </h1>
       <form
         onSubmit={handleSubmit(login, (errors) =>
-          console.log('FORM ERRORS:', errors)
+          console.log('FORM ERRORS:', errors),
         )}
         className='space-y-6 flex-1 bg-transparent'
       >
@@ -105,9 +105,9 @@ const AuthForm = () => {
                 className='bg-black placeholder:text-dark-500 h-9 focus-visible:ring-0 focus-visible:ring-offset-0 text-white border-0 w-full px-2'
               />
             </div>
-            {errors.username && (
+            {/* {errors.username && (
               <p className='text-xs text-red-500'>{errors.username.message} </p>
-            )}
+            )} */}
           </>
         )}
         <>
